@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Citas Médicas - Gobierno del Perú</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .topbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+
+        .topbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+        }
+
+        .gov-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .gov-logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .gov-title {
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .gov-subtitle {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 2px;
+        }
+
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: #f9fafb;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .user-menu:hover {
+            background: #e5e7eb;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .main-container {
+            margin-top: 80px;
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 0;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 30px;
+            color: #374151;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .sidebar-link:hover {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+        }
+
+        .sidebar-link.active {
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border-right-color: #dc2626;
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            font-size: 20px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .page-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 16px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-card.warning {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .stat-card.danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .action-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover {
+            border-color: #dc2626;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.15);
+        }
+
+        .action-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #dc2626;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #dc2626;
+            color: #dc2626;
+        }
+
+        .btn-outline:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+
+        .calendar-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+        }
+
+        .calendar {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .calendar-day:hover {
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .calendar-day.selected {
+            background: #dc2626;
+            color: white;
+        }
+
+        .calendar-day.has-appointment {
+            background: #10b981;
+            color: white;
+        }
+
+        .appointment-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .time-slot {
+            padding: 15px;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .time-slot:hover {
+            border-color: #dc2626;
+            background: rgba(220, 38, 38, 0.05);
+        }
+
+        .time-slot.selected {
+            background: #dc2626;
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .time-slot.unavailable {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .appointments-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .appointment-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .appointment-item:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .appointment-info h4 {
+            color: #dc2626;
+            margin-bottom: 5px;
+        }
+
+        .appointment-info p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-confirmed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #dc2626;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .result-date {
+            background: #dc2626;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .centers-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+
+        .centers-list {
+            max-height: 700px;
+            overflow-y: auto;
+        }
+
+        .center-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .center-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .center-name {
+            color: #dc2626;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .center-info {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .availability-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .availability-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .availability-high { background: #10b981; }
+        .availability-medium { background: #f59e0b; }
+        .availability-low { background: #ef4444; }
+
+        .map-placeholder {
+            background: #f3f4f6;
+            border-radius: 15px;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6b7280;
+            font-size: 18px;
+            border: 2px dashed #d1d5db;
+        }
+
+        .notifications-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .notification-item {
+            padding: 15px;
+            border-left: 4px solid #dc2626;
+            background: rgba(220, 38, 38, 0.05);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .notification-item.info {
+            border-left-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .notification-item.success {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .notification-item.warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .search-bar {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .search-btn {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .welcome-screen {
+            text-align: center;
+            padding: 60px 40px;
+        }
+
+        .welcome-logo {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #dc2626;
+            font-size: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .welcome-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .welcome-subtitle {
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 50px;
+        }
+
+        .entity-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .entity-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .entity-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .entity-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #dc2626;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .chatbot-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1500;
+        }
+
+        .chatbot-widget.active {
+            display: flex;
+        }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 20px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            background: #dc2626;
+            color: white;
+            margin-left: auto;
+        }
+
+        .message.bot {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .chatbot-input {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+            z-index: 1400;
+        }
+
+        .accessibility-toolbar {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1300;
+        }
+
+        .accessibility-toolbar.active {
+            display: flex;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .centers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .calendar-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                padding: 20px 0;
+            }
+            
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0 20px;
+            }
+            
+            .sidebar-item {
+                flex-shrink: 0;
+                margin-right: 10px;
+            }
+            
+            .sidebar-link {
+                padding: 10px 20px;
+                border-radius: 25px;
+                border-right: none;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .chatbot-widget {
+                width: calc(100vw - 20px);
+                height: calc(100vh - 100px);
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra superior -->
+    <div class="topbar">
+        <div class="topbar-container">
+            <div class="gov-brand">
+                <div class="gov-logo">GOV<br>PE</div>
+                <div>
+                    <div class="gov-title">Plataforma de Citas Médicas</div>
+                    <div class="gov-subtitle">Gobierno del Perú - Ministerio de Salud</div>
+                </div>
+            </div>
+            <div class="topbar-actions">
+                <button class="btn btn-outline" onclick="toggleAccessibility()">♿ Accesibilidad</button>
+                <div class="user-menu" onclick="toggleUserMenu()">
+                    <div class="user-avatar">JC</div>
+                    <span id="user-name">Juan Carlos Pérez</span>
+                    <span>▼</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor principal -->
+    <div class="main-container">
+        <!-- Barra lateral -->
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link active" onclick="showPage('dashboard')">
+                        <span class="sidebar-icon">🏠</span>
+                        Panel Principal
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('appointments')">
+                        <span class="sidebar-icon">📅</span>
+                        Mis Citas
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('book')">
+                        <span class="sidebar-icon">➕</span>
+                        Nueva Cita
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('results')">
+                        <span class="sidebar-icon">🔬</span>
+                        Resultados
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('centers')">
+                        <span class="sidebar-icon">🏥</span>
+                        Centros de Salud
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('notifications')">
+                        <span class="sidebar-icon">🔔</span>
+                        Notificaciones
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('profile')">
+                        <span class="sidebar-icon">👤</span>
+                        Mi Perfil
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="#" class="sidebar-link" onclick="showPage('help')">
+                        <span class="sidebar-icon">❓</span>
+                        Ayuda
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Área de contenido -->
+        <div class="content-area">
+            <!-- Panel Principal -->
+            <div class="page active" id="dashboard">
+                <div class="page-header">
+                    <h1 class="page-title">Bienvenido, Juan Carlos</h1>
+                    <p class="page-subtitle">Gestiona tus citas médicas y consulta tu información de salud</p>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div>
+                        <div class="stat-cards">
+                            <div class="stat-card">
+                                <div class="stat-number">2</div>
+                                <div class="stat-label">Citas Programadas</div>
+                            </div>
+                            <div class="stat-card warning">
+                                <div class="stat-number">1</div>
+                                <div class="stat-label">Pendiente de Confirmación</div>
+                            </div>
+                        </div>
+
+                        <div class="content-card">
+                            <h3 style="margin-bottom: 20px;">Próximas Citas</h3>
+                            <div class="appointment-item">
+                                <div class="appointment-info">
+                                    <h4>Cardiología - Dr. Carlos Mendoza</h4>
+                                    <p>📅 15 de Julio, 2025 - 10:30 AM</p>
+                                    <p>🏥 Hospital Nacional Dos de Mayo</p>
+                                </div>
+                                <div>
+                                    <span class="status-badge status-confirmed">Confirmada</span>
+                                </div>
+                            </div>
+                            <div class="appointment-item">
+                                <div class="appointment-info">
+                                    <h4>Medicina General - Dra. Ana López</h4>
+                                    <p>📅 20 de Julio, 2025 - 09:00 AM</p>
+                                    <p>🏥 Centro de Salud San Juan</p>
+                                </div>
+                                <div>
+                                    <span class="status-badge status-pending">Pendiente</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="content-card">
+                            <h3 style="margin-bottom: 20px;">Estado del Seguro</h3>
+                            <div class="stat-card">
+                                <div style="font-size: 24px; margin-bottom: 10px;">✅ ACTIVO</div>
+                                <div class="stat-label">Vigente hasta: 31/12/2025</div>
+                                <div style="margin-top: 15px; font-size: 12px;">
+                                    Último pago: Diciembre 2024
+                                </div>
+                            </div>
+                        </div>
